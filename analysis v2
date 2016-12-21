@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 import statsmodels.api as sm
+import seaborn as sns
 
 # Load Data
 with pd.HDFStore('/Users/Jack/Documents/gitTesting/data/train.h5') as train:
@@ -23,6 +24,8 @@ y = df11['y']
 x = df11.loc[:,'derived_0':'technical_44']
 print(x)
 
+# Cleaning
+
 def fillColumnNAs(colName):
     x[colName] = x[colName].fillna(x[colName].median())
     x[colName] = x[colName].fillna(0)
@@ -33,7 +36,35 @@ for i in x.columns:
 print(x)
 print(x.isnull().sum())
 
+# Linear regression
 X1 = sm.add_constant(x)
 
 est = sm.OLS(y, X1).fit()
 est.summary()
+
+## Pairwise correlation
+
+import matplotlib.pyplot as plt
+
+sns.set(style="white")
+
+# Compute the correlation matrix
+corr = df11.corr()
+
+# Generate a mask for the upper triangle
+mask = np.zeros_like(corr, dtype=np.bool)
+mask[np.triu_indices_from(mask)] = True
+
+# Set up the matplotlib figure
+f, ax = plt.subplots(figsize=(11, 9))
+
+# Generate a custom diverging colormap
+cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+# Draw the heatmap with the mask and correct aspect ratio
+sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3,
+            square=True, xticklabels=5, yticklabels=5,
+            linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
+
+## Correlation with y
+df11.corr()["y"]
