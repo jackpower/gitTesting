@@ -1,0 +1,39 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Dec 21 15:22:08 2016
+
+@author: Jack
+"""
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+import statsmodels.api as sm
+
+# Load Data
+with pd.HDFStore('/Users/Jack/Documents/gitTesting/data/train.h5') as train:
+    df = train.get('train')
+    
+df.head()
+
+df11 = df[df['id']==11]
+y = df11['y']
+x = df11.loc[:,'derived_0':'technical_44']
+print(x)
+
+def fillColumnNAs(colName):
+    x[colName] = x[colName].fillna(x[colName].median())
+    x[colName] = x[colName].fillna(0)
+    
+for i in x.columns:
+    fillColumnNAs(i)
+
+print(x)
+print(x.isnull().sum())
+
+X1 = sm.add_constant(x)
+
+est = sm.OLS(y, X1).fit()
+est.summary()
