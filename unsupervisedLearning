@@ -31,7 +31,9 @@ for i in df.columns:
     fillColumnNAs(i)
     
 ## Learning algorthim
-model = KMeans(n_clusters=5)
+model = KMeans(n_clusters=10)
 model = model.fit(scale(df))
 
 df['unsupervisedGrouping'] = model.labels_
+
+df.groupby(['unsupervisedGrouping'])['id'].nunique()
